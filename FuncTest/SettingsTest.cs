@@ -16,7 +16,8 @@ public class SettingTest
             .AddTransient<IEnvironmentService, EnvironmentService>()
             .AddTransient<ISerializationService, SerializationService>()
             .AddTransient<IJsonTypeInfoResolver, SourceGenerationContext>()
-            .AddTransient<ISettingsProvider<AppSettings>, SettingsProvider<AppSettings>>();
+            .AddSingleton<ISettingsProvider<AppSettings>, SettingsProvider<AppSettings>>()
+            .AddSingleton<ISettingsProvider<SubAppSettings>, SettingsProvider<SubAppSettings>>();
 
         using var serviceProvider = services.BuildServiceProvider();
 
@@ -48,6 +49,20 @@ public class SettingTest
         settings!.Load(file);
         Assert.Equal("test_changed", settings.Value.Name);
         Assert.Equal(321, settings.Value.Value);
+
+        ISettingsProvider<SubAppSettings>? subSetting = serviceProvider.GetRequiredService<ISettingsProvider<SubAppSettings>>();
+        Assert.Equal("test", subSetting.Value.Name);
+        Assert.Equal(123, subSetting.Value.Value);
+        Assert.Equal("City", subSetting.Value.City);
+
+        var subRes = subSetting?.Save(file);
+
+        Assert.True(subRes?.IsSuccess);
+
+       /* var v = settings!.Load(file);
+        Assert.True(v.IsSuccess);
+        Assert.Equal("test_changed", settings.Value.Name);
+        Assert.Equal(321, settings.Value.Value);*/
     }
 }
 
@@ -66,6 +81,11 @@ public class AppSettings
         new(3,"Кирилл"),
         ];
 }
+    
+public class SubAppSettings : AppSettings
+{
+    public string City { get; set; } = "City";
+}
 
 public class Person(int idx, string fio)
 {
@@ -74,6 +94,7 @@ public class Person(int idx, string fio)
 }
 
 [JsonSerializable(typeof(AppSettings))]
+[JsonSerializable(typeof(SubAppSettings))]
 public partial class SourceGenerationContext : JsonSerializerContext
 {
 }

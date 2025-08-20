@@ -55,14 +55,21 @@ public class SettingTest
         Assert.Equal(123, subSetting.Value.Value);
         Assert.Equal("City", subSetting.Value.City);
 
+
+
+        subSetting.Value.Name = "test_changed";
+        subSetting.Value.Value = 3333;
+        subSetting.Value.City = "City_change";
         var subRes = subSetting?.Save(file);
 
         Assert.True(subRes?.IsSuccess);
 
-       /* var v = settings!.Load(file);
-        Assert.True(v.IsSuccess);
-        Assert.Equal("test_changed", settings.Value.Name);
-        Assert.Equal(321, settings.Value.Value);*/
+        var vv = subSetting!.Load(file);
+        Assert.True(vv.IsSuccess);
+        
+        Assert.Equal("test_changed", subSetting.Value.Name);
+        Assert.Equal(3333, subSetting.Value.Value);
+        Assert.Equal("City_change", subSetting.Value.City);
     }
 }
 
@@ -82,8 +89,16 @@ public class AppSettings
         ];
 }
     
-public class SubAppSettings : AppSettings
+public class SubAppSettings() : AppSettings
 {
+    ICalcDb _calcDb = null!;
+    
+    public SubAppSettings(ICalcDb calcDb) : this()
+    {
+        _calcDb = calcDb;
+    }
+
+
     public string City { get; set; } = "City";
 }
 
@@ -92,6 +107,18 @@ public class Person(int idx, string fio)
     public int Idx { get; set; } = idx;
     public string FIO { get; set; } = fio;
 }
+
+public interface ICalcDb
+{
+    Ex<string> LoadSettingFromDb(string settingName);
+
+    Ex<bool> SaveSettingToDb(string name, string value, string? pswd = null);
+
+    IEnumerable<Person> GetPersons();
+
+}
+
+
 
 [JsonSerializable(typeof(AppSettings))]
 [JsonSerializable(typeof(SubAppSettings))]

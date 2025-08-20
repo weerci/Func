@@ -1,4 +1,6 @@
-﻿namespace Func.Meta;
+﻿using System.Diagnostics;
+
+namespace Func.Meta;
 
 public static class MetaEx
 {

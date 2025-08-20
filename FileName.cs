@@ -1,8 +1,8 @@
 ﻿namespace Func;
 
-public class FileName : FileSystem
+public class FileName() : FileSystem
 {
-    private FileName(string path)
+    private FileName(string path) : this()
     {
         if (!File.Exists(path))
             throw new FileNotFoundException();

@@ -4,7 +4,7 @@
 /// Интерфейс для работы с файлами настройки приложения
 /// </summary>
 /// <typeparam name="T">Класс, свойства которого представляют настройки приложения</typeparam>
-public interface ISettingsProvider<T>
+public interface ISettingsProvider<T> : ICanSave
 {
     /// <summary>
     /// Класс свойств настроек

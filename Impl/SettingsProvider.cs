@@ -1,9 +1,11 @@
 ﻿using Func.Services;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace Func.Impl;
 
 public class SettingsProvider<T>(ISerializationService serializationService, IJsonTypeInfoResolver? serializerContext)
-    : ISettingsProvider<T> where T : class, new()
+    : ReactiveObject, ISettingsProvider<T> where T : class, new()
 {
 
     private readonly ISerializationService _serialization = serializationService;
@@ -18,6 +20,9 @@ public class SettingsProvider<T>(ISerializationService serializationService, IJs
             Changed?.Invoke(this, EventArgs.Empty);
         }
     }
+
+    [Reactive] public bool CanSave { get; set; }
+
     private T _value = new();
 
     public event EventHandler? Changed;

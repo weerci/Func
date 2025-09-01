@@ -23,7 +23,17 @@ public class SettingsProvider<T>(ISerializationService serializationService, IJs
     public event EventHandler? Changed;
     public event EventHandler? Saving;
 
-    public Ex<bool> Load(Ex<FileName> fileName) => fileName.TryBool(fn => { _serialization.DeserializeFromFile<T>(fn as FileName, _serializerContext); });
+    public Ex<bool> Load(Ex<FileName> fileName)
+    {
+        var res = _serialization.DeserializeFromFile<T>(fileName, _serializerContext);
+        if (res.IsSuccess)
+        {
+            Value = res.Value!;
+            return true;
+        }
+        else
+            return false;
+    }
 
     public Ex<bool> Save(Ex<FileName> fileName)
     {

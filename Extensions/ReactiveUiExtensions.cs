@@ -1,5 +1,6 @@
 ﻿using DynamicData;
 using ReactiveUI;
+using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Windows.Input;
 
@@ -13,4 +14,13 @@ public static class ReactiveUiExtensions
             c.Execute(t);
     }
 
+    public static IObservable<TResult> WhenAnyValueNotNull<TSource, TResult>(
+        this TSource source,
+        Expression<Func<TSource, TResult>> propertySelector)
+        where TSource : IReactiveObject
+    {
+        return source.WhenAnyValue(propertySelector)
+            .Where(value => value != null)
+            .Select(value => value!);
+    }
 }
